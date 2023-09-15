@@ -5,13 +5,14 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import ru.job4j.cars.model.User;
+import ru.job4j.cars.repository.CrudRepository;
 import ru.job4j.cars.repository.UserRepository;
 
 public class UserUsage {
     public static void main(String[] args) {
         StandardServiceRegistry registry = new StandardServiceRegistryBuilder().configure().build();
         try (SessionFactory sf = new MetadataSources(registry).buildMetadata().buildSessionFactory()) {
-            UserRepository userRepository = new UserRepository(sf);
+            UserRepository userRepository = new UserRepository(new CrudRepository(sf));
             userRepository.findByLogin("admin").ifPresent(user -> userRepository.delete(user.getId()));
             User user = new User();
             user.setLogin("admin");
