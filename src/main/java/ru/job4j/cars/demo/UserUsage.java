@@ -5,28 +5,28 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import ru.job4j.cars.model.User;
-import ru.job4j.cars.repository.CrudRepository;
-import ru.job4j.cars.repository.UserRepository;
+import ru.job4j.cars.repository.hibernate.CrudRepository;
+import ru.job4j.cars.repository.hibernate.HibernateUserRepository;
 
 public class UserUsage {
     public static void main(String[] args) {
         StandardServiceRegistry registry = new StandardServiceRegistryBuilder().configure().build();
         try (SessionFactory sf = new MetadataSources(registry).buildMetadata().buildSessionFactory()) {
-            UserRepository userRepository = new UserRepository(new CrudRepository(sf));
-            userRepository.findByLogin("admin").ifPresent(user -> userRepository.delete(user.getId()));
+            HibernateUserRepository hibernateUserRepository = new HibernateUserRepository(new CrudRepository(sf));
+            hibernateUserRepository.findByLogin("admin").ifPresent(user -> hibernateUserRepository.delete(user.getId()));
             User user = new User();
             user.setLogin("admin");
             user.setPassword("admin");
-            userRepository.create(user);
-            userRepository.findAllOrderById().forEach(System.out::println);
-            userRepository.findByLikeLogin("d").forEach(System.out::println);
-            userRepository.findById(user.getId()).ifPresent(System.out::println);
-            userRepository.findByLogin("admin").ifPresent(System.out::println);
+            hibernateUserRepository.create(user);
+            hibernateUserRepository.findAllOrderById().forEach(System.out::println);
+            hibernateUserRepository.findByLikeLogin("d").forEach(System.out::println);
+            hibernateUserRepository.findById(user.getId()).ifPresent(System.out::println);
+            hibernateUserRepository.findByLogin("admin").ifPresent(System.out::println);
             user.setPassword("password");
-            userRepository.update(user);
-            userRepository.findById(user.getId()).ifPresent(System.out::println);
-            userRepository.delete(user.getId());
-            userRepository.findAllOrderById().forEach(System.out::println);
+            hibernateUserRepository.update(user);
+            hibernateUserRepository.findById(user.getId()).ifPresent(System.out::println);
+            hibernateUserRepository.delete(user.getId());
+            hibernateUserRepository.findAllOrderById().forEach(System.out::println);
         } finally {
             StandardServiceRegistryBuilder.destroy(registry);
         }
