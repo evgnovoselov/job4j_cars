@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.time.LocalDateTime;
+
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
@@ -19,4 +21,6 @@ public class HistoryOwner {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private Owner owner;
+    private LocalDateTime startAt;
+    private LocalDateTime endAt;
 }
