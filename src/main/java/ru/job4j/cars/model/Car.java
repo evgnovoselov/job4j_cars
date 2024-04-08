@@ -20,11 +20,6 @@ public class Car {
     @ManyToOne
     @JoinColumn(name = "engine_id")
     private Engine engine;
-    @ManyToMany
-    @JoinTable(
-            name = "history_owners",
-            joinColumns = {@JoinColumn(name = "car_id", nullable = false, updatable = false)},
-            inverseJoinColumns = {@JoinColumn(name = "owner_id", nullable = false, updatable = false)}
-    )
-    private Set<Owner> owners = new HashSet<>();
+    @OneToMany(mappedBy = "car")
+    private Set<HistoryOwner> historyOwners = new HashSet<>();
 }
