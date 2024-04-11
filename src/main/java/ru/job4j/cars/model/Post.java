@@ -37,4 +37,7 @@ public class Post {
             inverseJoinColumns = {@JoinColumn(name = "user_id")}
     )
     private Set<User> participates = new HashSet<>();
+    @OneToOne
+    @JoinColumn(name = "file_id")
+    private File photo;
 }
