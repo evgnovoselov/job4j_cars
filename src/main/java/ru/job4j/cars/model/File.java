@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
+@Table(name = "file")
 public class File {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
