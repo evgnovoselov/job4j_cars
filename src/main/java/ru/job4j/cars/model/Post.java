@@ -21,6 +21,9 @@ public class Post {
     private int id;
     private String description;
     private LocalDateTime created;
+    @OneToOne
+    @JoinColumn(name = "file_id")
+    private File photo;
     @ManyToOne
     @JoinColumn(name = "auto_user_id")
     private User user;
@@ -37,7 +40,4 @@ public class Post {
             inverseJoinColumns = {@JoinColumn(name = "user_id")}
     )
     private Set<User> participates = new HashSet<>();
-    @OneToOne
-    @JoinColumn(name = "file_id")
-    private File photo;
 }
