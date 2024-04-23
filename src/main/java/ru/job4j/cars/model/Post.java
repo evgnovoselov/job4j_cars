@@ -22,7 +22,7 @@ public class Post {
     private String description;
     private LocalDateTime created;
     @OneToMany(mappedBy = "post")
-    private Set<File> photos = new HashSet<>();
+    private Set<PostPhoto> photos = new HashSet<>();
     @ManyToOne
     @JoinColumn(name = "auto_user_id")
     private User user;

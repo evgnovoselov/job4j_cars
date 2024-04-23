@@ -25,17 +25,25 @@ public class HibernatePostRepository implements PostRepository {
             List<Post> posts;
             jpql = """
                     select p from Post p
-                    left join fetch p.photo
                     left join fetch p.user
                     left join fetch p.car c
                     left join fetch c.engine
-                    left join fetch c.historyOwners
+                    left join fetch c.historyOwners ho
+                    left join fetch ho.owner o
+                    left join fetch o.user
                     where %s""".formatted(whereJpql);
             Query<Post> query = session.createQuery(jpql, Post.class);
             for (Map.Entry<String, Object> parameterEntry : parameters.entrySet()) {
                 query.setParameter(parameterEntry.getKey(), parameterEntry.getValue());
             }
             posts = query.getResultList();
+            jpql = """
+                    select p from Post p
+                    left join fetch p.photos ph
+                    left join fetch ph.photo
+                    where p in :posts""";
+            posts = session.createQuery(jpql, Post.class).setParameter("posts", posts)
+                    .getResultList();
             jpql = """
                     select p from Post p
                     left join fetch p.priceHistories
