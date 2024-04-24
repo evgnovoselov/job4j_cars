@@ -21,9 +21,8 @@ public class Post {
     private int id;
     private String description;
     private LocalDateTime created;
-    @OneToOne
-    @JoinColumn(name = "file_id")
-    private File photo;
+    @OneToMany(mappedBy = "post")
+    private Set<PostPhoto> photos = new HashSet<>();
     @ManyToOne
     @JoinColumn(name = "auto_user_id")
     private User user;

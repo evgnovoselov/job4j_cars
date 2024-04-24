@@ -11,6 +11,8 @@
         <property name="hibernate.connection.pool_size">1</property>
         <property name="hibernate.current_session_context_class">thread</property>
         <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+        <property name="hibernate.highlight_sql">true</property>
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
 
         <mapping class="ru.job4j.cars.model.User"/>
@@ -22,5 +24,6 @@
         <mapping class="ru.job4j.cars.model.Owner"/>
         <mapping class="ru.job4j.cars.model.Participate"/>
         <mapping class="ru.job4j.cars.model.File"/>
+        <mapping class="ru.job4j.cars.model.PostPhoto"/>
     </session-factory>
 </hibernate-configuration>
