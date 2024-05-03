@@ -50,7 +50,7 @@ public class HibernatePostRepository implements PostRepository {
     @Override
     public Collection<Post> findAllWherePhotoIsNotNull() {
         try {
-            return findAllPost("ph.path is not null", Map.of());
+            return findAllPost("size ( phs ) > 0", Map.of());
         } catch (Exception e) {
             log.error("Error find all where photo is not null");
             log.error(e.getMessage());
