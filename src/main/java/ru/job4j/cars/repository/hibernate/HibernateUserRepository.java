@@ -83,7 +83,7 @@ public class HibernateUserRepository implements UserRepository {
     @Override
     public List<User> findByLikeLogin(String key) {
         return crudRepository.query(
-                "from User where login like :key",
+                "from User where lower(login) like lower(:key)",
                 User.class,
                 Map.of("key", "%" + key + "%")
         );
