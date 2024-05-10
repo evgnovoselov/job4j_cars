@@ -62,7 +62,7 @@ class HibernateUserRepositoryTest {
         User actualUser = userRepository.findById(updateUser.getId()).orElseThrow();
         List<User> actualUsers = userRepository.findAllOrderById();
 
-        assertThat(actualUsers.size()).isEqualTo(1);
+        assertThat(actualUsers).hasSize(1);
         User expectedUser = new User(updateUser.getId(), "new_ivan", "new_password");
         assertThat(actualUser.getId()).isNotZero();
         assertThat(actualUser).usingRecursiveComparison().isEqualTo(expectedUser);
@@ -78,7 +78,7 @@ class HibernateUserRepositoryTest {
         List<User> actualUsers = userRepository.findAllOrderById();
 
         assertThat(actualOptionalUser).isEmpty();
-        assertThat(actualUsers.size()).isZero();
+        assertThat(actualUsers).isEmpty();
     }
 
     @Test
@@ -92,7 +92,7 @@ class HibernateUserRepositoryTest {
 
         assertThat(actualUser).usingRecursiveComparison()
                 .isEqualTo(new User(user.getId(), "ivan", "password"));
-        assertThat(actualUsers.size()).isEqualTo(1);
+        assertThat(actualUsers).hasSize(1);
     }
 
     @Test
@@ -103,7 +103,7 @@ class HibernateUserRepositoryTest {
 
         List<User> actualUsers = userRepository.findAllOrderById();
 
-        assertThat(actualUsers.size()).isEqualTo(4);
+        assertThat(actualUsers).hasSize(4);
         List<User> expectedUsers = IntStream.range(1, 5).boxed()
                 .map(num -> new User(
                                 savedUsers.get(num - 1).getId(),
@@ -170,7 +170,7 @@ class HibernateUserRepositoryTest {
                 new User(users.get(4).getId(), "OivAnA", "pass"),
                 new User(users.get(6).getId(), "DiVaNO", "pass")
         );
-        assertThat(actualUsers.size()).isEqualTo(expectedUsers.size());
+        assertThat(actualUsers).hasSize(expectedUsers.size());
         assertThat(actualUsers).usingRecursiveComparison().isEqualTo(expectedUsers);
     }
 
@@ -185,14 +185,14 @@ class HibernateUserRepositoryTest {
         List<User> actualUsers = userRepository.findByLikeLogin("van");
         List<User> actualUsersInDb = userRepository.findAllOrderById();
 
-        assertThat(actualUsers.size()).isZero();
+        assertThat(actualUsers).isEmpty();
         assertThat(actualUsers).usingRecursiveComparison().isEqualTo(List.of());
         List<User> expectedUsersInDb = List.of(
                 new User(users.get(0).getId(), "alex", "pass"),
                 new User(users.get(1).getId(), "anna", "pass"),
                 new User(users.get(2).getId(), "julia", "pass")
         );
-        assertThat(actualUsersInDb.size()).isEqualTo(expectedUsersInDb.size());
+        assertThat(actualUsersInDb).hasSize(expectedUsersInDb.size());
         assertThat(actualUsersInDb).usingRecursiveComparison().isEqualTo(expectedUsersInDb);
     }
 
@@ -202,7 +202,7 @@ class HibernateUserRepositoryTest {
         List<User> actualUsers = userRepository.findByLikeLogin("van");
 
         List<User> expectedUsers = List.of();
-        assertThat(actualUsers.size()).isZero();
+        assertThat(actualUsers).isEmpty();
         assertThat(actualUsers).usingRecursiveComparison().isEqualTo(expectedUsers);
     }
 
@@ -214,7 +214,7 @@ class HibernateUserRepositoryTest {
         Optional<User> actualOptionalUser = userRepository.findByLogin("ivan");
         List<User> actualUsers = userRepository.findAllOrderById();
 
-        assertThat(actualUsers.size()).isEqualTo(1);
+        assertThat(actualUsers).hasSize(1);
         assertThat(actualOptionalUser).isPresent();
         User expectedUser = new User(user.getId(), "ivan", "password");
         assertThat(actualOptionalUser.get()).usingRecursiveComparison().isEqualTo(expectedUser);
@@ -228,7 +228,7 @@ class HibernateUserRepositoryTest {
         Optional<User> actualOptionalUser = userRepository.findByLogin("julia");
         List<User> actualUsers = userRepository.findAllOrderById();
 
-        assertThat(actualUsers.size()).isEqualTo(1);
+        assertThat(actualUsers).hasSize(1);
         assertThat(actualOptionalUser).isEmpty();
     }
 
