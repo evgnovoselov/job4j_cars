@@ -10,12 +10,39 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
 @Slf4j
 public class HibernatePostRepository implements PostRepository {
     private final CrudRepository crudRepository;
+
+    @Override
+    public Post create(Post post) {
+        try {
+            crudRepository.run(session -> session.persist(post));
+        } catch (Exception e) {
+            log.error("Error create post");
+            log.error(e.getMessage());
+        }
+        return post;
+    }
+
+    @Override
+    public void update(Post post) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Optional<Post> findById(int id) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Collection<Post> findAllOrderByCreated() {
+        throw new UnsupportedOperationException();
+    }
 
     private Collection<Post> findAllPost(String whereJpql, Map<String, Object> parameters) {
         String jpql = """
@@ -70,5 +97,18 @@ public class HibernatePostRepository implements PostRepository {
             log.error(e.getMessage());
         }
         return Collections.emptyList();
+    }
+
+    @Override
+    public void delete(int id) {
+        try {
+            crudRepository.run(
+                    "delete from Post where id = :id",
+                    Map.of("id", id)
+            );
+        } catch (Exception e) {
+            log.error("Error delete Post where id = {}", id);
+            log.error(e.getMessage());
+        }
     }
 }
