@@ -31,17 +31,50 @@ public class HibernatePostRepository implements PostRepository {
 
     @Override
     public void update(Post post) {
-        throw new UnsupportedOperationException();
+        try {
+            crudRepository.run(session -> session.merge(post));
+        } catch (Exception e) {
+            log.error("Error update post {}", post.getId());
+            log.error(e.getMessage());
+        }
     }
 
     @Override
     public Optional<Post> findById(int id) {
-        throw new UnsupportedOperationException();
+        try {
+            String jpql = """
+                    select p from Post p
+                    left join fetch p.user
+                    where p.id = :id""";
+            return crudRepository.optional(
+                    jpql,
+                    Post.class,
+                    Map.of("id", id)
+            );
+        } catch (Exception e) {
+            log.error("Error find by id post, id = {}", id);
+            log.error(e.getMessage());
+        }
+        return Optional.empty();
     }
 
     @Override
     public Collection<Post> findAllOrderByCreated() {
-        throw new UnsupportedOperationException();
+        try {
+            String jpql = """
+                    select p from Post p
+                    left join fetch p.user
+                    left join fetch p.car c
+                    left join fetch c.engine
+                    left join fetch p.photos phs
+                    left join fetch phs.photo ph
+                    order by p.created desc""";
+            return crudRepository.query(jpql, Post.class);
+        } catch (Exception e) {
+            log.error("Error find all order by created");
+            log.error(e.getMessage());
+        }
+        return Collections.emptyList();
     }
 
     private Collection<Post> findAllPost(String whereJpql, Map<String, Object> parameters) {
