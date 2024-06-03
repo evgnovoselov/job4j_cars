@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 import ru.job4j.cars.model.PostPhoto;
 import ru.job4j.cars.repository.PostPhotoRepository;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -39,6 +41,20 @@ public class HibernatePostPhotoRepository implements PostPhotoRepository {
             log.error(e.getMessage());
         }
         return Optional.empty();
+    }
+
+    @Override
+    public Collection<PostPhoto> findAll() {
+        try {
+            return crudRepository.query(
+                    "select pp from PostPhoto pp",
+                    PostPhoto.class
+            );
+        } catch (Exception e) {
+            log.error("Error find all PostPhoto");
+            log.error(e.getMessage());
+        }
+        return Collections.emptyList();
     }
 
     @Override

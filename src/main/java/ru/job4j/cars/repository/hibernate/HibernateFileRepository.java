@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 import ru.job4j.cars.model.File;
 import ru.job4j.cars.repository.FileRepository;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -39,6 +41,20 @@ public class HibernateFileRepository implements FileRepository {
             log.error(e.getMessage());
         }
         return Optional.empty();
+    }
+
+    @Override
+    public Collection<File> findAll() {
+        try {
+            return crudRepository.query(
+                    "select f from File f",
+                    File.class
+            );
+        } catch (Exception e) {
+            log.error("Error find all File");
+            log.error(e.getMessage());
+        }
+        return Collections.emptyList();
     }
 
     @Override

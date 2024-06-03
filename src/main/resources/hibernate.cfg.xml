@@ -13,7 +13,6 @@
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.format_sql">true</property>
         <property name="hibernate.highlight_sql">true</property>
-        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
 
         <mapping class="ru.job4j.cars.model.User"/>
         <mapping class="ru.job4j.cars.model.Post"/>
