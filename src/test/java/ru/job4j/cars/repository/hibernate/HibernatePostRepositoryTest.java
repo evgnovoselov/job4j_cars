@@ -6,15 +6,17 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.job4j.cars.config.SessionFactoryConfig;
+import ru.job4j.cars.model.File;
 import ru.job4j.cars.model.Post;
+import ru.job4j.cars.model.PostPhoto;
 import ru.job4j.cars.model.User;
+import ru.job4j.cars.repository.FileRepository;
+import ru.job4j.cars.repository.PostPhotoRepository;
 import ru.job4j.cars.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -25,6 +27,9 @@ class HibernatePostRepositoryTest {
     private static HibernatePostRepository postRepository;
     private static UserRepository userRepository;
     private static List<User> testUsers;
+    private static FileRepository fileRepository;
+    private static List<File> testFiles;
+    private static PostPhotoRepository postPhotoRepository;
 
     @BeforeAll
     static void beforeAll() {
@@ -32,17 +37,21 @@ class HibernatePostRepositoryTest {
         CrudRepository crudRepository = new CrudRepository(sessionFactory);
         postRepository = new HibernatePostRepository(crudRepository);
         userRepository = new HibernateUserRepository(crudRepository);
+        fileRepository = new HibernateFileRepository(crudRepository);
+        postPhotoRepository = new HibernatePostPhotoRepository(crudRepository);
         clearDb();
         initTestDb();
     }
 
-    private static void clearPostDb() {
+    private static void clearPostAndPostPhotoDb() {
+        postPhotoRepository.findAll().stream().map(PostPhoto::getId).forEach(postPhotoRepository::delete);
         postRepository.findAllOrderByCreated().stream().map(Post::getId).forEach(postRepository::delete);
     }
 
     private static void clearDb() {
-        clearPostDb();
+        clearPostAndPostPhotoDb();
         userRepository.findAllOrderById().stream().map(User::getId).forEach(userRepository::delete);
+        fileRepository.findAll().stream().map(File::getId).forEach(fileRepository::delete);
     }
 
     private static void initTestDb() {
@@ -51,11 +60,14 @@ class HibernatePostRepositoryTest {
                 new User(0, "petrov", "password"),
                 new User(0, "durov", "password")
         ).map(userRepository::create).toList();
+        testFiles = IntStream.rangeClosed(1, 4).mapToObj(value ->
+                        new File(null, "fileName-" + value, "path/to/file-" + value))
+                .map(fileRepository::create).toList();
     }
 
     @BeforeEach
     void setUp() {
-        clearPostDb();
+        clearPostAndPostPhotoDb();
     }
 
     @AfterAll
@@ -224,7 +236,33 @@ class HibernatePostRepositoryTest {
 
     @Test
     void whenFindAllWherePhotoIsNotNullThenReturnCollectionPostWithPhoto() {
+        List<Post> posts = IntStream.rangeClosed(0, 3).mapToObj(
+                value -> postRepository.create(Post.builder()
+                        .description("Post description %s".formatted(value))
+                        .created(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
+                        .user(testUsers.get(value % testUsers.size()))
+                        .build())
+        ).toList();
+        List<PostPhoto> postPhotos = List.of(
+                postPhotoRepository.create(new PostPhoto(null, posts.get(0), testFiles.get(0), 1000)),
+                postPhotoRepository.create(new PostPhoto(null, posts.get(1), testFiles.get(1), 1000)),
+                postPhotoRepository.create(new PostPhoto(null, posts.get(1), testFiles.get(2), 1000)),
+                postPhotoRepository.create(new PostPhoto(null, posts.get(3), testFiles.get(3), 1000))
+        );
+        postPhotos.forEach(postPhoto -> {
+            Post post = postPhoto.getPost();
+            if (post.getPhotos() == null) {
+                post.setPhotos(new HashSet<>());
+            }
+            post.getPhotos().add(postPhoto);
+        });
+        posts.forEach(postRepository::update);
 
+        Collection<Post> actualPosts = postRepository.findAllWherePhotoIsNotNull();
+
+        assertThat(actualPosts).hasSize(3);
+        assertThat(actualPosts.stream().map(Post::getId).toList())
+                .isEqualTo(IntStream.of(0, 1, 3).mapToObj(value -> posts.get(value).getId()).toList());
     }
 
     @Test
