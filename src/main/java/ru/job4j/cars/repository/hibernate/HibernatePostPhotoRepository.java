@@ -22,8 +22,7 @@ public class HibernatePostPhotoRepository implements PostPhotoRepository {
         try {
             crudRepository.run(session -> session.persist(postPhoto));
         } catch (Exception e) {
-            log.error("Error create PostPhoto");
-            log.error(e.getMessage());
+            log.error("Error create PostPhoto", e);
         }
         return postPhoto;
     }
@@ -37,8 +36,7 @@ public class HibernatePostPhotoRepository implements PostPhotoRepository {
                     Map.of("id", id)
             );
         } catch (Exception e) {
-            log.error("Error find PostPhoto by id where id = {}", id);
-            log.error(e.getMessage());
+            log.error("Error find PostPhoto by id where id = {}", id, e);
         }
         return Optional.empty();
     }
@@ -51,8 +49,7 @@ public class HibernatePostPhotoRepository implements PostPhotoRepository {
                     PostPhoto.class
             );
         } catch (Exception e) {
-            log.error("Error find all PostPhoto");
-            log.error(e.getMessage());
+            log.error("Error find all PostPhoto", e);
         }
         return Collections.emptyList();
     }
@@ -65,8 +62,7 @@ public class HibernatePostPhotoRepository implements PostPhotoRepository {
                     Map.of("id", id)
             );
         } catch (Exception e) {
-            log.error("Error delete PostPhoto where id = {}", id);
-            log.error(e.getMessage());
+            log.error("Error delete PostPhoto where id = {}", id, e);
         }
     }
 }

@@ -23,8 +23,7 @@ public class HibernatePostRepository implements PostRepository {
         try {
             crudRepository.run(session -> session.persist(post));
         } catch (Exception e) {
-            log.error("Error create post");
-            log.error(e.getMessage());
+            log.error("Error create post", e);
         }
         return post;
     }
@@ -34,8 +33,7 @@ public class HibernatePostRepository implements PostRepository {
         try {
             crudRepository.run(session -> session.merge(post));
         } catch (Exception e) {
-            log.error("Error update post {}", post.getId());
-            log.error(e.getMessage());
+            log.error("Error update post {}", post.getId(), e);
         }
     }
 
@@ -52,8 +50,7 @@ public class HibernatePostRepository implements PostRepository {
                     Map.of("id", id)
             );
         } catch (Exception e) {
-            log.error("Error find by id post, id = {}", id);
-            log.error(e.getMessage());
+            log.error("Error find by id post, id = {}", id, e);
         }
         return Optional.empty();
     }
@@ -71,8 +68,7 @@ public class HibernatePostRepository implements PostRepository {
                     order by p.created desc""";
             return crudRepository.query(jpql, Post.class);
         } catch (Exception e) {
-            log.error("Error find all order by created");
-            log.error(e.getMessage());
+            log.error("Error find all order by created", e);
         }
         return Collections.emptyList();
     }
@@ -101,8 +97,7 @@ public class HibernatePostRepository implements PostRepository {
                     )
             );
         } catch (Exception e) {
-            log.error("Error find all by created between from {} to {}", from, to);
-            log.error(e.getMessage());
+            log.error("Error find all by created between from {} to {}", from, to, e);
         }
         return Collections.emptyList();
     }
@@ -112,8 +107,7 @@ public class HibernatePostRepository implements PostRepository {
         try {
             return findAllPost("size ( phs ) > 0", Map.of());
         } catch (Exception e) {
-            log.error("Error find all where photo is not null");
-            log.error(e.getMessage());
+            log.error("Error find all where photo is not null", e);
         }
         return Collections.emptyList();
     }
@@ -126,8 +120,7 @@ public class HibernatePostRepository implements PostRepository {
                     Map.of("name", "%" + name + "%")
             );
         } catch (Exception e) {
-            log.error("Error find all by car name");
-            log.error(e.getMessage());
+            log.error("Error find all by car name", e);
         }
         return Collections.emptyList();
     }
@@ -140,8 +133,7 @@ public class HibernatePostRepository implements PostRepository {
                     Map.of("id", id)
             );
         } catch (Exception e) {
-            log.error("Error delete Post where id = {}", id);
-            log.error(e.getMessage());
+            log.error("Error delete Post where id = {}", id, e);
         }
     }
 }

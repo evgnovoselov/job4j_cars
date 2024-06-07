@@ -22,8 +22,7 @@ public class HibernateFileRepository implements FileRepository {
         try {
             crudRepository.run(session -> session.persist(file));
         } catch (Exception e) {
-            log.error("Error create File");
-            log.error(e.getMessage());
+            log.error("Error create File", e);
         }
         return file;
     }
@@ -37,8 +36,7 @@ public class HibernateFileRepository implements FileRepository {
                     Map.of("id", id)
             );
         } catch (Exception e) {
-            log.error("Error find File by id = {}", id);
-            log.error(e.getMessage());
+            log.error("Error find File by id = {}", id, e);
         }
         return Optional.empty();
     }
@@ -51,8 +49,7 @@ public class HibernateFileRepository implements FileRepository {
                     File.class
             );
         } catch (Exception e) {
-            log.error("Error find all File");
-            log.error(e.getMessage());
+            log.error("Error find all File", e);
         }
         return Collections.emptyList();
     }
@@ -65,8 +62,7 @@ public class HibernateFileRepository implements FileRepository {
                     Map.of("id", id)
             );
         } catch (Exception e) {
-            log.error("Error delete File where id = {}", id);
-            log.error(e.getMessage());
+            log.error("Error delete File where id = {}", id, e);
         }
     }
 }
