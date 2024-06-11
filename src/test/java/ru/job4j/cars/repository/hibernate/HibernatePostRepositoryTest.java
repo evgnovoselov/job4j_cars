@@ -122,6 +122,18 @@ class HibernatePostRepositoryTest {
     }
 
     @Test
+    void whenCreatePostProcessExceptionThenReturnOwnerWithoutId() {
+        CrudRepository crudRepositoryMock = mock(CrudRepository.class);
+        HibernatePostRepository postRepositoryMock = new HibernatePostRepository(crudRepositoryMock);
+        doThrow(RuntimeException.class).when(crudRepositoryMock).run(any());
+
+        Post actualPost = postRepositoryMock.create(new Post());
+
+        verify(crudRepositoryMock, times(1)).run(any());
+        assertThat(actualPost.getId()).isZero();
+    }
+
+    @Test
     void whenFindByIdThenReturnOptionalPost() {
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         Post post = postRepository.create(Post.builder()
