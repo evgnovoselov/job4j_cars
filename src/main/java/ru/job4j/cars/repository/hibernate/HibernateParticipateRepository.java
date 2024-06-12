@@ -52,15 +52,6 @@ public class HibernateParticipateRepository implements ParticipateRepository {
     }
 
     @Override
-    public void update(Participate participate) {
-        try {
-            crudRepository.run(session -> session.merge(participate));
-        } catch (Exception e) {
-            log.error("Error update participate where id = {}", participate.getId(), e);
-        }
-    }
-
-    @Override
     public void delete(int id) {
         try {
             crudRepository.run(

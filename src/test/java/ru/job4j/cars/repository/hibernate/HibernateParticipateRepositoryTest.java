@@ -14,6 +14,7 @@ import ru.job4j.cars.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -148,51 +149,115 @@ class HibernateParticipateRepositoryTest {
 
     @Test
     void whenFindByIdWrongIdThenReturnOptionalEmpty() {
+        Participate participate = participateRepository.create(Participate.builder()
+                .user(testUsers.get(1))
+                .post(testPosts.get(0))
+                .build());
 
+        Optional<Participate> actualOptionalParticipate = participateRepository.findById(participate.getId() + 1);
+        Collection<Participate> actualParticipates = participateRepository.findAll();
+
+        assertThat(actualOptionalParticipate).isEmpty();
+        assertThat(actualParticipates).hasSize(1);
     }
 
     @Test
     void whenFindByIdProcessExceptionThenReturnOptionalEmpty() {
+        CrudRepository crudRepositoryMock = mock(CrudRepository.class);
+        HibernateParticipateRepository participateRepositoryMock = new HibernateParticipateRepository(crudRepositoryMock);
+        doThrow(RuntimeException.class).when(crudRepositoryMock).optional(any(), any(), any());
 
+        Optional<Participate> actualOptionalParticipate = participateRepositoryMock.findById(1);
+
+        verify(crudRepositoryMock, times(1)).optional(any(), any(), any());
+        assertThat(actualOptionalParticipate).isEmpty();
     }
 
     @Test
     void whenFindAllThenReturnCollectionParticipates() {
+        List<Participate> participates = IntStream.rangeClosed(1, 4)
+                .mapToObj(
+                        value -> Participate.builder()
+                                .user(testUsers.get(value - 1))
+                                .post(testPosts.get((value - 1) % 2))
+                                .build()
+                )
+                .map(participateRepository::create)
+                .toList();
 
+        Collection<Participate> actualParticipates = participateRepository.findAll();
+
+        assertThat(actualParticipates).hasSize(4);
+        List<Participate> expectedParticipates = IntStream.rangeClosed(1, 4)
+                .mapToObj(
+                        value -> Participate.builder()
+                                .id(participates.get(value - 1).getId())
+                                .user(testUsers.get(value - 1))
+                                .post(testPosts.get((value - 1) % 2))
+                                .build()
+                ).toList();
+        assertThat(actualParticipates.stream().map(this::copyOf).toList()).usingRecursiveComparison()
+                .isEqualTo(expectedParticipates);
     }
 
     @Test
     void whenFindAllAndEmptyDbThenReturnCollectionEmpty() {
 
+        Collection<Participate> actualParticipates = participateRepository.findAll();
+
+        assertThat(actualParticipates).hasSize(0);
     }
 
     @Test
     void whenFindAllProcessExceptionThenReturnCollectionEmpty() {
+        CrudRepository crudRepositoryMock = mock(CrudRepository.class);
+        HibernateParticipateRepository participateRepositoryMock = new HibernateParticipateRepository(crudRepositoryMock);
+        doThrow(RuntimeException.class).when(crudRepositoryMock).query(any(), any());
 
-    }
+        Collection<Participate> actualParticipate = participateRepositoryMock.findAll();
 
-    @Test
-    void whenUpdateThenUpdated() {
-
-    }
-
-    @Test
-    void whenUpdateProcessExceptionThenNothing() {
-
+        verify(crudRepositoryMock, times(1)).query(any(), any());
+        assertThat(actualParticipate).isEmpty();
     }
 
     @Test
     void whenDeleteThenDeleted() {
+        Participate participate = participateRepository.create(Participate.builder()
+                .user(testUsers.get(1))
+                .post(testPosts.get(0))
+                .build());
 
+        participateRepository.delete(participate.getId());
+        Optional<Participate> actualOptionalParticipate = participateRepository.findById(participate.getId());
+        Collection<Participate> actualParticipates = participateRepository.findAll();
+
+        assertThat(actualOptionalParticipate).isEmpty();
+        assertThat(actualParticipates).isEmpty();
     }
 
     @Test
     void whenDeleteWrongIdThenParticipateNotDeleted() {
+        Participate participate = participateRepository.create(Participate.builder()
+                .user(testUsers.get(1))
+                .post(testPosts.get(0))
+                .build());
 
+        participateRepository.delete(participate.getId() + 1);
+        Optional<Participate> actualOptionalParticipate = participateRepository.findById(participate.getId());
+        Collection<Participate> actualParticipates = participateRepository.findAll();
+
+        assertThat(actualOptionalParticipate).isPresent();
+        assertThat(actualParticipates).hasSize(1);
     }
 
     @Test
     void whenDeleteProcessExceptionThenNothing() {
+        CrudRepository crudRepositoryMock = mock(CrudRepository.class);
+        HibernateParticipateRepository participateRepositoryMock = new HibernateParticipateRepository(crudRepositoryMock);
+        doThrow(RuntimeException.class).when(crudRepositoryMock).run(any(), any());
 
+        participateRepositoryMock.delete(1);
+
+        verify(crudRepositoryMock, times(1)).run(any(), any());
     }
 }

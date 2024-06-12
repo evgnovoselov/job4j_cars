@@ -12,7 +12,5 @@ public interface ParticipateRepository {
 
     Optional<Participate> findById(int id);
 
-    void update(Participate participate);
-
     void delete(int id);
 }
