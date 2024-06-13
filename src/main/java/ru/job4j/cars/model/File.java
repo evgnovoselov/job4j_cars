@@ -1,11 +1,13 @@
 package ru.job4j.cars.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@NoArgsConstructor
+@Builder
+@AllArgsConstructor
 @Entity
 @Table(name = "file")
 public class File {
